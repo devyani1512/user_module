@@ -16,7 +16,7 @@ from app.schemas import RegisterRequest, RegisterResponse
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 
-# ── Custom exceptions (mapped to HTTP codes in the router) ────────────────────
+
 
 class EmailAlreadyExists(Exception):
     pass
@@ -30,7 +30,7 @@ class TenantNotFound(Exception):
     pass
 
 
-# ── Core function ─────────────────────────────────────────────────────────────
+
 
 async def register_user(
     db: AsyncSession,

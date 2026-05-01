@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 
 
-# ── Request ──────────────────────────────────────────────────────────────────
+
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -41,7 +41,6 @@ class RegisterRequest(BaseModel):
         return v
 
 
-# ── Response ─────────────────────────────────────────────────────────────────
 
 class RegisterResponse(BaseModel):
     user_id: uuid.UUID
@@ -52,7 +51,7 @@ class RegisterResponse(BaseModel):
     created_at: datetime
 
 
-# ── Error envelope (shared across all modules) ────────────────────────────────
+
 
 class ErrorDetail(BaseModel):
     code: str
