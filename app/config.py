@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/dcc_userdb"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./dcc_userdb.db"    
     SECRET_KEY: str = "change-this-secret"
     ENVIRONMENT: str = "development"
 

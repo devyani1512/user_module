@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 
 
-
+# ── Request ──────────────────────────────────────────────────────────────────
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -28,12 +28,14 @@ class RegisterRequest(BaseModel):
     def password_strength(cls, v: str) -> str:
         """
         Rules (match the WEAK_PASSWORD error code in the spec):
-        - At least 8 characters
+        - Between 8 and 72 characters (bcrypt hard limit)
         - At least one uppercase letter
         - At least one digit
         """
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters.")
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 bytes or fewer (bcrypt limit).")
         if not any(c.isupper() for c in v):
             raise ValueError("Password must contain at least one uppercase letter.")
         if not any(c.isdigit() for c in v):
@@ -41,6 +43,7 @@ class RegisterRequest(BaseModel):
         return v
 
 
+# ── Response ─────────────────────────────────────────────────────────────────
 
 class RegisterResponse(BaseModel):
     user_id: uuid.UUID
@@ -51,7 +54,25 @@ class RegisterResponse(BaseModel):
     created_at: datetime
 
 
+# ── User profile (used by GET /users) ────────────────────────────────────────
 
+class UserProfile(BaseModel):
+    user_id: uuid.UUID
+    email: str
+    username: str
+    region: str
+    status: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class UsersListResponse(BaseModel):
+    total: int
+    users: list[UserProfile]
+
+
+# ── Error envelope (shared across all modules) ────────────────────────────────
 
 class ErrorDetail(BaseModel):
     code: str

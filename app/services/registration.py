@@ -6,17 +6,16 @@ Kept separate from the route so it can be unit-tested without HTTP overhead.
 import uuid
 from datetime import datetime, timezone
 
-from passlib.context import CryptContext
+import bcrypt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Tenant, User
 from app.schemas import RegisterRequest, RegisterResponse
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 
-
+# ── Custom exceptions (mapped to HTTP codes in the router) ────────────────────
 
 class EmailAlreadyExists(Exception):
     pass
@@ -30,7 +29,7 @@ class TenantNotFound(Exception):
     pass
 
 
-
+# ── Core function ─────────────────────────────────────────────────────────────
 
 async def register_user(
     db: AsyncSession,
@@ -68,7 +67,10 @@ async def register_user(
         raise UsernameTaken(f"Username '{payload.username}' is already taken.")
 
     # 4 — Hash password
-    password_hash = pwd_context.hash(payload.password)
+    password_hash = bcrypt.hashpw(
+        payload.password.encode("utf-8"),
+        bcrypt.gensalt(rounds=12),
+    ).decode("utf-8")
 
     # 5 — Create user
     new_user = User(

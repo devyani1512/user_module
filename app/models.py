@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime, timezone
+import uuid as _uuid
+from sqlalchemy import Uuid
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -12,7 +13,7 @@ class Tenant(Base):
     __tablename__ = "tenants"
 
     tenant_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     plan: Mapped[str] = mapped_column(String(30), default="free")
@@ -27,13 +28,13 @@ class User(Base):
     __tablename__ = "users"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     username: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
     tenant_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("tenants.tenant_id"), nullable=False
+        Uuid(as_uuid=True), ForeignKey("tenants.tenant_id"), nullable=False
     )
     region: Mapped[str] = mapped_column(String(50), nullable=False, default="ap-south-1")
     status: Mapped[str] = mapped_column(String(20), default="active")
